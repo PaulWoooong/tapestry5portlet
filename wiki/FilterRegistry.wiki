@@ -6,3 +6,5 @@ The FilterRegistry is refered as the default tapestry registry, which is initita
 
 
 = Details =
+
+Please do not add any services to the registry in the AppModule, which would not be used for asset handling.
