@@ -140,6 +140,17 @@ public class LinkImplPortlet implements Link
 
         builder.append(unencode(portletURL.toString()));
 
+        String sep = "?";
+        
+        for (String name : getParameterNames()){
+			String value = parameters.get(name);
+			builder.append(sep);
+			builder.append(name);
+			builder.append("=");
+			builder.append(value);
+			sep = "&";
+       }
+        
         if (InternalUtils.isNonBlank(anchor))
         {
             builder.append("#");
