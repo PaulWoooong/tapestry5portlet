@@ -1,6 +1,5 @@
 package org.apache.tapestry5.internal.portlet.services;
 
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,7 +48,9 @@ public class ComponentEventLinkEncoderImplPortlet implements ComponentEventLinkE
     private static final int BUFFER_SIZE = 100;
 
     private static final char SLASH = '/';
-
+    
+    private static final String PAGE_CONTEXT_NAME_MOD = "?t:ac=";
+    
     // A beast that recognizes all the elements of a path in a single go.
     // We skip the leading slash, then take the next few terms (until a dot or a colon)
     // as the page name.  Then there's a sequence that sees a dot
@@ -249,7 +250,13 @@ public class ComponentEventLinkEncoderImplPortlet implements ComponentEventLinkE
 
     public ComponentEventRequestParameters decodeComponentEventRequest(Request request)
     {
-        Matcher matcher = PATH_PATTERN.matcher(request.getPath());
+    	String path = request.getPath();
+    	int indexOfPageContextName = path.indexOf(PAGE_CONTEXT_NAME_MOD);
+    	if (indexOfPageContextName != -1){
+    		path = path.substring(0, indexOfPageContextName);
+    	}
+    	
+        Matcher matcher = PATH_PATTERN.matcher(path);
 
         if (!matcher.matches()) return null;
 
@@ -273,9 +280,15 @@ public class ComponentEventLinkEncoderImplPortlet implements ComponentEventLinkE
         if (!componentClassResolver.isPageName(activePageName)) return null;
 
         EventContext eventContext = contextPathEncoder.decodePath(matcher.group(CONTEXT));
-
-        EventContext activationContext = contextPathEncoder.decodePath(
-                request.getParameter(InternalConstants.PAGE_CONTEXT_NAME));
+        
+        String pageContext;
+        if (indexOfPageContextName != -1){
+        	pageContext = request.getPath().substring(indexOfPageContextName + 6);
+        } else {
+        	pageContext = null;
+        }
+        
+        EventContext activationContext = contextPathEncoder.decodePath(pageContext);
 
         // The event type is often omitted, and defaults to "action".
 
