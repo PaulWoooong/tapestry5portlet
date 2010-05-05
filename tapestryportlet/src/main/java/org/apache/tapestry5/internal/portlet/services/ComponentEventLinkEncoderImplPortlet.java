@@ -121,7 +121,7 @@ public class ComponentEventLinkEncoderImplPortlet implements ComponentEventLinkE
         try 
         {
             portletURL.setPortletMode(portletRequest.getPortletMode());
-            portletURL.setWindowState(portletRequest.getWindowState());
+            portletURL.setWindowState(WindowState.NORMAL);
         } 
         catch (PortletException pe) 
         {
